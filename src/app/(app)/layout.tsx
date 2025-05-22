@@ -32,11 +32,11 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     <nav className="grid gap-2 text-lg font-medium">
       <Link
         href="/dashboard"
-        className="group flex h-12 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:text-base mb-4"
+        className="group flex h-12 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:text-base mb-4 lg:bg-transparent lg:text-primary lg:justify-start"
         prefetch={false}
       >
         <Pizza className="h-6 w-6 transition-all group-hover:scale-110" />
-        <span className="sr-only">DashFlow</span>
+        <span className="hidden md:inline">DashFlow</span>
       </Link>
       {navItems.map((item) => (
         <TooltipProvider key={item.href} delayDuration={0}>

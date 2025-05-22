@@ -16,7 +16,7 @@
     --secondary: 240 5.9% 90%; /* Zinc 200 */
     --secondary-foreground: 240 10% 3.9%; /* Zinc 950 */
     --muted: 240 5.7% 85%; /* Zinc 300 */
-    --muted-foreground: 240 3.8% 46.1%; /* Zinc 500 */
+    --muted-foreground: 240 3.8% 30%; /* Zinc 600 */
     --accent: 256 90% 66%; /* Violet 500 */
     --accent-foreground: 0 0% 98%; /* White */
     --destructive: 0 84.2% 60.2%; /* Red 500 */
