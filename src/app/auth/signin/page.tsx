@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChromeIcon, Loader2 } from "lucide-react";
+import { Aperture, Loader2 } from "lucide-react";
 
 export default function SignInPage() {
   const router = useRouter();
@@ -16,7 +16,10 @@ export default function SignInPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (status === "authenticated") {
+    if(status === "loading"){
+      setIsLoading(true);
+    }else if (status === "authenticated") {
+      setIsLoading(false);
       router.push("/dashboard");
     }
   }, [status, router]);
@@ -62,7 +65,7 @@ export default function SignInPage() {
             {isLoading ? (
               <Loader2 className="mr-2 h-5 w-5 animate-spin" />
             ) : (
-              <ChromeIcon className="mr-2 h-5 w-5" />
+              <Aperture className="mr-2 h-5 w-5" />
             )}
             Sign in with Google
           </Button>

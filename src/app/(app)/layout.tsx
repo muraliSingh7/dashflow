@@ -1,7 +1,7 @@
 
-"use client"
+"use client";
 
-import type { ReactNode } from 'react';
+import { type ReactNode, useEffect } from "react";
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Home, Package, PanelLeft, Pizza } from 'lucide-react';
@@ -11,6 +11,8 @@ import { UserNav } from '@/components/layout/user-nav';
 import { ThemeToggleButton } from '@/components/theme-toggle';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useSession } from "next-auth/react";
+import { redirect } from "next/navigation";
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: Home },
@@ -18,6 +20,12 @@ const navItems = [
 ];
 
 export default function AppLayout({ children }: { children: ReactNode }) {
+  const { data: session, status } = useSession();
+
+  useEffect(() => {
+    if (status === "unauthenticated") redirect("/auth/signin");
+  }, [status]);
+  
   const pathname = usePathname();
 
   const sidebarContent = (
@@ -37,8 +45,8 @@ export default function AppLayout({ children }: { children: ReactNode }) {
               <Link
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-4 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-accent",
-                  pathname === item.href && "bg-accent text-primary font-semibold",
+                  "flex items-center gap-4 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary-foreground hover:bg-accent",
+                  pathname === item.href && "bg-accent text-primary-foreground font-semibold",
                   "md:justify-start justify-center" 
                 )}
                 prefetch={false}

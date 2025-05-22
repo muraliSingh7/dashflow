@@ -41,11 +41,26 @@ export const columns: ColumnDef<PizzaOrder>[] = [
     accessorKey: "pizzaType",
     header: "Pizza Type",
     cell: ({ row }) => <div className="table-row-animation">{row.getValue("pizzaType")}</div>,
+    filterFn: (row, id, value) => {
+      if (!Array.isArray(value)) return true;
+      return value.includes(row.getValue(id));
+    }
   },
   {
     accessorKey: "quantity",
-    header: "Quantity",
-    cell: ({ row }) => <div className="text-center table-row-animation">{row.getValue("quantity")}</div>,
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className="px-2"
+        >
+          Quantity
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => <div className="table-row-animation">{row.getValue("quantity")}</div>
   },
   {
     accessorKey: "orderDate",
@@ -78,7 +93,8 @@ export const columns: ColumnDef<PizzaOrder>[] = [
       );
     },
     filterFn: (row, id, value) => {
+      if (!Array.isArray(value)) return true;
       return value.includes(row.getValue(id));
-    },
+    }
   },
 ];

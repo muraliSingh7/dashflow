@@ -1,7 +1,7 @@
 
 "use client";
 
-import * as React from "react";
+import { useState } from "react";
 import {
   flexRender,
   getCoreRowModel,
@@ -23,28 +23,60 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import type { OrderStatus } from "@/types";
+import { CombinedFilterDropdown } from "./molecules/CombinedFilterDropdown";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
 }
 
-const statuses: OrderStatus[] = ["Pending", "In Progress", "Delivered", "Cancelled"];
+function getUniqueValues<TData>(data: TData[], key: keyof TData){
+  return Array.from(
+    new Set(
+      data
+        .map((item) => item[key])
+        .filter((value): value is Exclude<typeof value, null | undefined> => value != null)
+    )
+  ).sort();
+}
+
 
 export function OrdersDataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+
+
+  const getFilterValue = (id: string): string[] => {
+    const filter = columnFilters.find((f) => f.id === id);
+    return Array.isArray(filter?.value) ? filter.value : [];
+  };
+
+  const filterOptions = {
+    status: {
+      label: "Status",
+      options: getUniqueValues(data, "status" as keyof TData),
+      selected: getFilterValue("status"),
+      onChange: (val: string[]) =>
+        setColumnFilters((prev) => [
+          ...prev.filter((f) => f.id !== "status"),
+          ...(val.length > 0 ? [{ id: "status", value: val }] : []),
+        ])
+
+    },
+    pizzaType: {
+      label: "Pizza Type",
+      options: getUniqueValues(data, "pizzaType" as keyof TData),
+      selected: getFilterValue("pizzaType"),
+      onChange: (val: string[]) =>
+        setColumnFilters((prev) => [
+          ...prev.filter((f) => f.id !== "pizzaType"),
+          ...(val.length > 0 ? [{ id: "pizzaType", value: val }] : []),
+        ])
+    },
+  };
 
   const table = useReactTable({
     data,
@@ -57,31 +89,14 @@ export function OrdersDataTable<TData, TValue>({
     getFilteredRowModel: getFilteredRowModel(),
     state: {
       sorting,
-      columnFilters,
-    },
+      columnFilters
+    }
   });
 
   return (
     <div className="rounded-lg border shadow-sm bg-card">
       <div className="p-4">
-        <Select
-          value={(table.getColumn("status")?.getFilterValue() as string) ?? ""}
-          onValueChange={(value) =>
-            table.getColumn("status")?.setFilterValue(value === "all" ? undefined : value)
-          }
-        >
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Filter by status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Statuses</SelectItem>
-            {statuses.map((status) => (
-              <SelectItem key={status} value={status}>
-                {status}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <CombinedFilterDropdown filterOptions={filterOptions} />
       </div>
       <div className="overflow-auto">
         <Table>
@@ -94,9 +109,9 @@ export function OrdersDataTable<TData, TValue>({
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                     </TableHead>
                   );
                 })}
