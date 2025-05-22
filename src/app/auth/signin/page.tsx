@@ -3,22 +3,21 @@
 
 import { signIn, useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Aperture, Loader2 } from "lucide-react";
-
-export default function SignInPage() {
+function SignInPage(): ReactNode {
   const router = useRouter();
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const searchParams = useSearchParams();
   const error = searchParams.get("error");
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if(status === "loading"){
+    if (status === "loading") {
       setIsLoading(true);
-    }else if (status === "authenticated") {
+    } else if (status === "authenticated") {
       setIsLoading(false);
       router.push("/dashboard");
     }
@@ -30,18 +29,9 @@ export default function SignInPage() {
       await signIn("google", { callbackUrl: "/dashboard" });
     } catch (err) {
       console.error("Sign in failed:", err);
-      setIsLoading(false); 
+      setIsLoading(false);
     }
   };
-
-  if (status === "loading" || (status === "authenticated" && !isLoading)) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-12 w-12 animate-spin text-primary" />
-      </div>
-    );
-  }
-
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
@@ -75,5 +65,19 @@ export default function SignInPage() {
         Welcome to DashFlow. Your modern dashboard experience.
       </p>
     </div>
+  );
+}
+
+export default function SignInPageWithSuspense() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center">
+          <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        </div>
+      }
+    >
+      <SignInPage />
+    </Suspense>
   );
 }
