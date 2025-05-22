@@ -15,9 +15,7 @@ function SignInPage(): ReactNode {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (status === "loading") {
-      setIsLoading(true);
-    } else if (status === "authenticated") {
+    if (status === "authenticated") {
       setIsLoading(false);
       router.push("/dashboard");
     }
